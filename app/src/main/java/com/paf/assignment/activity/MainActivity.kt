@@ -37,22 +37,28 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 if (PagingState.DONE == pagingResponseStates.state) {
-                    tv_error.visibility = View.GONE
-                    btn_retry.visibility = View.GONE
-                    rv_image_list.visibility = View.VISIBLE
+                    handleViews()
                 }
 
                 if (pagingResponseStates.state == PagingState.ERROR && imagesAdapter.currentList.isNullOrEmpty()) {
-                    tv_error.visibility = View.VISIBLE
-                    btn_retry.visibility = View.VISIBLE
-                    rv_image_list.visibility = View.GONE
-                    tv_error.text =
-                        pagingResponseStates.throwable?.getErrorMessage() ?: "Something went wrong"
+                    handleViews(pagingResponseStates.throwable?.getErrorMessage() ?: "Something went wrong")
                 }
             }
         }
     }
 
+    private fun handleViews(errorMessage:String?=null){
+        errorMessage?.let {
+            tv_error.visibility = View.VISIBLE
+            btn_retry.visibility = View.VISIBLE
+            rv_image_list.visibility = View.GONE
+            tv_error.text = it
+            return
+        }
+        tv_error.visibility = View.GONE
+        btn_retry.visibility = View.GONE
+        rv_image_list.visibility = View.VISIBLE
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,6 +66,7 @@ class MainActivity : AppCompatActivity() {
 
         rv_image_list.adapter = imagesAdapter
         btn_retry.setOnClickListener {
+            handleViews()
             setPagination()
         }
         setPagination()
